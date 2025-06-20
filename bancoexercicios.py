@@ -47,7 +47,7 @@ df_limpo = stores_df.copy()
 import pandas as pd
 import unicodedata
 
-# Função para padronizar texto
+
 def limpar_texto(texto):
     if pd.isnull(texto):
         return texto
@@ -74,7 +74,7 @@ from pandas.api.types import is_numeric_dtype
 for nome, df in dataframes.items():
     for coluna in df.columns:
 
-        # Corrigir datas com formato conhecido
+       
         if df[coluna].dtype == 'object':
             amostra = df[coluna].dropna().astype(str).head(10)
             if amostra.str.contains(r'\d{1,2}/\d{1,2}/\d{4} \d{1,2}:\d{2}:\d{2} (AM|PM)', regex=True).any():
@@ -86,7 +86,7 @@ for nome, df in dataframes.items():
 
 if df[coluna].dtype == 'object':
             try:
-                # Tenta converter removendo vírgulas e espaços
+               
                 df[coluna] = df[coluna].str.replace(',', '').str.strip()
                 df[coluna] = pd.to_numeric(df[coluna], errors='ignore')
                 if is_numeric_dtype(df[coluna]):
@@ -97,17 +97,17 @@ if df[coluna].dtype == 'object':
 import sqlite3
 import pandas as pd
 
-# Conectar ao banco de dados em memória
+
 conn = sqlite3.connect(":memory:")
 cursor = conn.cursor()
 
-# Dropar tabelas e views se já existirem para começar do zero
+
 cursor.execute("DROP VIEW IF EXISTS ultima_compra_view;") # Dropar a VIEW antes das tabelas
 cursor.execute("DROP TABLE IF EXISTS vendas;")
 cursor.execute("DROP TABLE IF EXISTS produtos;")
 cursor.execute("DROP TABLE IF EXISTS clientes;")
 
-# Criar as tabelas (incluindo 'data' em vendas)
+
 cursor.execute("""
 CREATE TABLE clientes (
   id_cliente INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -139,7 +139,6 @@ CREATE TABLE vendas(
 );
 """)
 
-# --- Inserir alguns dados de exemplo ---
 cursor.execute("INSERT INTO clientes (nome, email) VALUES (?, ?)", ("Cliente A", "a@email.com"))
 cursor.execute("INSERT INTO clientes (nome, email) VALUES (?, ?)", ("Cliente B", "b@email.com"))
 cursor.execute("INSERT INTO clientes (nome, email) VALUES (?, ?)", ("Cliente C", "c@email.com"))
@@ -151,7 +150,7 @@ cursor.execute("INSERT INTO produtos (nome, categoria, preço) VALUES (?, ?, ?)"
 cursor.execute("INSERT INTO produtos (nome, categoria, preço) VALUES (?, ?, ?)", ("Produto W", "Livros", 30.00))
 cursor.execute("INSERT INTO produtos (nome, categoria, preço) VALUES (?, ?, ?)", ("Produto K", "Casa", 150.00))
 
-# Inserir vendas (com datas e múltiplas compras para o mesmo cliente/produto para testar a última compra)
+
 cursor.execute("INSERT INTO vendas (id_cliente, id_produto, quantidade, data) VALUES (?, ?, ?, ?)", (1, 1, 1, "2023-01-15")) # Cliente A, Prod X
 cursor.execute("INSERT INTO vendas (id_cliente, id_produto, quantidade, data) VALUES (?, ?, ?, ?)", (1, 2, 5, "2023-01-20")) # Cliente A, Prod Y (compra posterior)
 cursor.execute("INSERT INTO vendas (id_cliente, id_produto, quantidade, data) VALUES (?, ?, ?, ?)", (1, 1, 2, "2023-01-25")) # Cliente A, Prod X (última compra deste produto)
@@ -163,13 +162,7 @@ cursor.execute("INSERT INTO vendas (id_cliente, id_produto, quantidade, data) VA
 cursor.execute("INSERT INTO vendas (id_cliente, id_produto, quantidade, data) VALUES (?, ?, ?, ?)", (3, 4, 3, "2023-03-05")) # Cliente C, Prod W
 cursor.execute("INSERT INTO vendas (id_cliente, id_produto, quantidade, data) VALUES (?, ?, ?, ?)", (3, 5, 1, "2023-03-10")) # Cliente C, Prod K
 
-conn.commit() # Salvar as inserções
-
-# --- 1. Criar uma VIEW para a última compra por Cliente e Produto ---
-
-# Para encontrar a última compra por cliente+produto, precisamos usar uma função de janela
-# ou agrupar e encontrar a data máxima. Usar uma função de janela como ROW_NUMBER() ou RANK()
-# junto com PARTITION BY e ORDER BY é a forma mais robusta.
+conn.commit() 
 
 cursor.execute("""
 CREATE VIEW ultima_compra_view AS
@@ -193,12 +186,12 @@ JOIN produtos p ON v.id_produto = p.id_produto
 conn.commit()
 
 print("--- Conteúdo da VIEW 'ultima_compra_view' (mostrando o rank) ---")
-# Selecionando todos os dados da VIEW para demonstrar o campo 'rn'
+
 df_view_full = pd.read_sql_query("SELECT * FROM ultima_compra_view LIMIT 10;", conn)
 print(df_view_full)
 
 print("\n--- Relatório: Última Compra por Cliente e Produto (usando a VIEW) ---")
-# Consultando a VIEW e filtrando para onde o rank é 1
+
 
 query_ultima_compra = """
 SELECT
@@ -215,13 +208,9 @@ ORDER BY cliente, data_compra DESC;
 df_ultima_compra = pd.read_sql_query(query_ultima_compra, conn)
 print(df_ultima_compra)
 
-# --- 2. Exemplo de Subquery (Filtrando Clientes com Ticket Médio > R$ 300) ---
+# ---  Exemplo de Subquery (Filtrando Clientes com Ticket Médio > R$ 300) ---
 
 print("\n--- Relatório: Clientes com Ticket Médio > R$ 300 (usando Subquery) ---")
-# Sua consulta original já é um ótimo exemplo de subquery
-# A subquery (a parte interna no FROM) calcula o ticket médio para CADA cliente.
-# A consulta externa seleciona a partir dos resultados da subquery (tratada como uma tabela 'sub')
-# e aplica a condição WHERE sub.ticket_medio > 300.
 
 query_ticket_maior_300_subquery = """
 SELECT nome, ticket_medio
@@ -242,14 +231,14 @@ ORDER BY sub.ticket_medio DESC;
 df_ticket_maior_300_subquery = pd.read_sql_query(query_ticket_maior_300_subquery, conn)
 print(df_ticket_maior_300_subquery)
 
-# Fechar a conexão ao finalizar
+
 conn.close()
 
 
 
 import pandas as pd
 
-# Simulando o conteúdo da VIEW 'ultima_compra_view' com o ranking
+
 data = {
     'cliente': ['Cliente A', 'Cliente A', 'Cliente A', 'Cliente B', 'Cliente B', 'Cliente C', 'Cliente C', 'Cliente C'],
     'produto': ['Produto X', 'Produto X', 'Produto Y', 'Produto Z', 'Produto W', 'Produto Y', 'Produto W', 'Produto K'],
@@ -262,18 +251,18 @@ data = {
 
 df_view = pd.DataFrame(data)
 
-# Mostrando o conteúdo completo da view com rank
+
 print("\nConteúdo da VIEW 'ultima_compra_view' (mostrando o rank) ---")
 print(df_view)
 
-# Filtrar para mostrar apenas as últimas compras (rank = 1)
+
 df_ultimas_compras = df_view[df_view['rn'] == 1].copy()
 df_ultimas_compras = df_ultimas_compras.sort_values(by=['cliente', 'produto'])
 
 print("\n--- Relatório: Última Compra por Cliente e Produto (usando a VIEW) ---")
 print(df_ultimas_compras[['cliente', 'produto', 'data_compra', 'quantidade', 'preço', 'valor_total_item']])
 
-# Calcular ticket médio por cliente (média dos valores da última compra)
+
 ticket_medio = df_ultimas_compras.groupby('cliente')['valor_total_item'].mean().reset_index()
 ticket_medio = ticket_medio.sort_values(by='valor_total_item', ascending=False)
 ticket_medio.columns = ['nome', 'ticket_medio']
