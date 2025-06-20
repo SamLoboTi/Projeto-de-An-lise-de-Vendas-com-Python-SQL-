@@ -1,0 +1,41 @@
+CHANNEL_ID,CHANNEL_NAME,CHANNEL_TYPE
+1,other place,own channel
+2,phone place,own channel
+3,whats place,own channel
+4,face place,own channel
+5,food place,marketplace
+6,store place,own channel
+7,berlin place,own channel
+8,madrid place,own channel
+9,think place,own channel
+10,lisbon place,own channel
+11,super place,own channel
+12,all place,marketplace
+13,velocity place,marketplace
+15,eats place,marketplace
+17,shopp place,marketplace
+20,munich place,marketplace
+21,london place,marketplace
+23,atchin place,marketplace
+24,full place,marketplace
+25,on place,marketplace
+28,register place,marketplace
+29,glub place,marketplace
+30,speed place,marketplace
+31,search place,marketplace
+32,beatles place,marketplace
+33,san place,marketplace
+34,ahora place,marketplace
+35,brazil place,marketplace
+36,own place,own channel
+37,longo place,marketplace
+38,wear place,marketplace
+39,ronald place,marketplace
+41,panceps place,marketplace
+42,off place,marketplace
+43,caicai place,marketplace
+44,ready place,own channel
+46,choco place,own channel
+47,porto place,marketplace
+48,center place,marketplace
+49,riba place,own channel
