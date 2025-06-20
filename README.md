@@ -1,0 +1,97 @@
+Bem vindo
+
+Este projeto mostra o passo a passo real da análise de dados de um conjunto de vendas, desde a limpeza no Python até a modelagem SQL e visualização no Power BI.
+
+O foco foi extrair insights como **última compra por cliente e produto**, **ticket médio**, **produtos mais impactantes**, e **frequência de compra**.
+
+---
+
+## ✍️ Diário Pessoal de Execução
+
+Criei a base das necessidades e busquei as soluções com as linguagens de conhecimento começando pelo Python.
+
+1. Salvei um conjunto de dados de Vendas pelo site Kaggle.com  
+2. Importei algumas APIs de costume: `"numpy"`, `"pandas"` e criei a conexão com as tabelas.  
+3. Após importar os arquivos `.csv` com o pandas, conferi os dados com `head()` e verifiquei os tipos de codificação pra evitar erro de leitura — principalmente com acentuação, como foi o caso das tabelas `stores_df` e `hubs_df`, que utilizei o parâmetro `encoding='ISO-8859-1'`, a alternativa que solucionou isso.  
+4. Explorei os dados com `df.head()` e percebi colunas com nomes longos ou com espaços, o que poderia dificultar a manipulação. Anotei isso para padronizar depois, se necessário.  
+5. Usei `df.info()` e notei colunas sendo tratadas como `object`, mesmo sendo numéricas — tratei isso logo para evitar erro mais à frente.  
+6. Identifiquei valores nulos com `df.isnull().sum()` e fiz uma “charadinha false” pra priorizar as colunas que realmente precisavam de tratamento.  
+7. Para poucos valores nulos: preenchi com `.fillna(df['coluna'].mode()[0])` ou mediana para numéricos.  
+8. Alguns campos como localização ou código da loja ficaram nulos por escolha, pois a ausência indicava erro — mantive nulo pra não comprometer.  
+9. Salvei tudo em um `DataFrame` limpo e documentei cada modificação pra rastreabilidade.  
+10. Salvei uma versão intermediária com `to_csv('store_limpo.csv', index=False)` pra não comprometer os dados brutos.  
+11. Criei um loop para detectar colunas `object` que podiam ser datas mascaradas. Usei `pd.to_datetime(errors='coerce')` e se 80% convertesse, marcava como “suspeita”.  
+12. Criei a função `LIMPAR_TEXTO()` que padroniza textos: remove acento, coloca em minúsculo e tira espaço extra.  
+13. Para datas com formatos estranhos (ex: “04/30/2021 9:59:57 AM”), usei regex e `pd.to_datetime()` após teste com amostras.  
+14. Para campos numéricos como texto, tirei vírgulas, usei `pd.to_numeric(errors='ignore')`, e validei com `is_numeric_dtype()`.  
+15. Depois de limpar tudo, preparei um banco em memória com `sqlite3`. Adicionei `DROP TABLE` e `DROP VIEW` pra deixar tudo limpo e isolado.  
+16. Meu projeto se baseia nas linguagens que mais estudo: Python e SQL, com foco em análise.  
+17. Comecei criando as tabelas `clientes`, `produtos`, `vendas`.  
+18. `clientes` tinha `id_cliente`, `nome`, `email`. Em `produtos`, coloquei `id_produto`, `nome`, `categoria`, `preço` (tipo REAL).  
+19. Em `vendas`, relacionei os IDs e incluí `quantidade`, `data`. A data ficou como `TEXT` no formato `yyyy/mm/dd` para compatibilidade com SQLite.  
+20. A modelagem ficou simples e funcional, permitindo consultas como: receita por cliente, produtos mais vendidos, frequência, etc.  
+21. Criei as primeiras consultas SQL com `SELECT` + `JOIN` para buscar vendas por cliente e produto.  
+22. Notei lentidão e erros em algumas queries. Resolvi criando índices nas colunas `id_cliente` e `id_produto`.  
+23. Validei os totais comparando com os dados no Python, conferindo se a modelagem estava certa.  
+24. Comecei a analisar frequência de compra por cliente com `GROUP BY`, `COUNT` e `SUM`.  
+25. Fiz testes para separar clientes recorrentes de novos com base na data da primeira compra.  
+26. Calculei o **ticket médio** por cliente: total gasto ÷ número de compras.  
+27. Tratei o caso de clientes com uma única compra pra não distorcer as médias.  
+28. Documentei todas as queries com comentários, pra facilitar a leitura e reuso.  
+29. Comecei a desenhar os gráficos e métricas mais úteis pro negócio.  
+30. Exportei os resultados das queries para `.csv` e levei para o Power BI.
+
+---
+
+## 📊 Análise: Última Compra por Cliente e Produto
+
+| Cliente   | Produto   | Data       | Quantidade | Preço     | Valor Total |
+|-----------|-----------|------------|------------|-----------|-------------|
+| Cliente A | Produto X | 2023-01-25 | 2          | R$ 550,00 | R$ 1100,00  |
+| Cliente A | Produto Y | 2023-01-20 | 5          | R$ 45,00  | R$ 225,00   |
+| Cliente B | Produto Z | 2023-02-10 | 1          | R$ 1200,00| R$ 1200,00  |
+| Cliente C | Produto W | 2023-03-05 | 3          | R$ 30,00  | R$ 90,00    |
+
+---
+
+### 🎟️ Ticket Médio por Cliente
+
+| Cliente   | Ticket Médio |
+|-----------|--------------|
+| Cliente A | R$ 662,50    |
+| Cliente B | R$ 630,00    |
+| Cliente C | R$ 95,00     |
+
+---
+
+## 🧩 Conclusões Estratégicas
+
+### 1. Quais clientes geram mais receita por compra?
+- **Cliente A e Cliente B** são os que mais gastam por compra.
+- Ideal para campanhas de retenção e **fidelização**.
+- Cliente C é mais econômico, indicado para **combos promocionais**.
+
+### 2. Quais produtos mais impactam o ticket médio?
+- **Produto X** e **Produto Z** têm maior peso no ticket médio.
+- Devem ser destacados com estratégias que aumentem **valor percebido**.
+
+### 3. Quais produtos os clientes compram com mais frequência?
+- Produtos como **Produto W** e **Produto Y** aparecem com mais recorrência.
+- Potencial para **programas de fidelidade** e **vendas cruzadas**.
+
+---
+
+## ⚡ Tecnologias Utilizadas
+
+- Python (Pandas, NumPy)
+- SQLite3 (banco de dados em memória)
+- SQL puro para modelagem e extração
+- Power BI para visualização de insights
+
+---
+
+## 🙌 Sobre Mim
+
+ Análise e Desenvolvimento de Sistemas ,sou apaixonada por dados. Esse projeto reflete não só meus conhecimentos técnicos em Python, SQL , mas também minha **dedicação, resiliência e vontade de aprender na prática ,a ser uma analista de dados.**.
+
+---
